@@ -17,6 +17,8 @@ class Game:
         self.playing = False
         self.running = False
         self.score = 0
+        self.score_final = 0 ##
+        self.x = 0
         self.death_count = 0
         self.game_speed = 20
         self.x_pos_bg = 0
@@ -57,10 +59,11 @@ class Game:
     def update_score(self):
         self.score += 1
         if self.score % 100 == 0:
-            self.game_speed += 5
+            self.game_speed += 2
+        self.score_final = self.score ##
 
     def draw(self, screen):
-        self.clock.tick(FPS)
+        self.clock.tick(FPS)  
         self.screen.fill((255, 255, 255))
         self.draw_background()
         self.player.draw(self.screen)
@@ -82,7 +85,15 @@ class Game:
         font = pygame.font.Font(FONT_STYLE, 22)
         text = font.render(f"Score: {self.score}", True, (0, 0, 0))
         text_rect = text.get_rect()
-        text_rect.center = (1000, 50)
+        text_rect.center = (100, 50) ##
+        self.screen.blit(text, text_rect)
+
+    def draw_final_score_and_death(self): ###
+        self.score_final = self.score
+        font = pygame.font.Font(FONT_STYLE, 22)     
+        text = font.render(f"Final score: {self.score_final} /death: {self.death_count}", True, (0, 0, 0))
+        text_rect = text.get_rect()
+        text_rect.center = (950, 50)
         self.screen.blit(text, text_rect)
 
     def handle_events_menu(self):
@@ -100,13 +111,21 @@ class Game:
 
         if self.death_count == 0:
             font = pygame.font.Font(FONT_STYLE, 22)
-            text = font.render("press any key to start", True, (0, 0, 0))
+            text = font.render("Press any key to start", True, (0, 0, 0))
             text_rect = text.get_rect()
             text_rect.center = (half_screen_width, half_screen_height)
             self.screen.blit(text, text_rect)
         else:
-            self.screen.blit(ICON, (half_screen_width - 20, half_screen_height - 140))
-                    
+            self.screen.blit(ICON, (half_screen_width - 50, half_screen_height - 140)) ###
+            font = pygame.font.Font(FONT_STYLE, 22)
+            text = font.render("Press any key to restart", True, (100, 100, 100))
+            text_rect = text.get_rect()
+            text_rect.center = (half_screen_width, half_screen_height)
+            self.screen.blit(text, text_rect)
+            self.draw_final_score_and_death() ###
+            ##self.score = 0
+                               
         pygame.display.update()
         self.handle_events_menu()
+         
 
