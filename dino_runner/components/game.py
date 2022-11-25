@@ -1,6 +1,6 @@
 import pygame
 
-from dino_runner.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS, DEFAULT_TYPE
+from dino_runner.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS, DEFAULT_TYPE, GAME_OVER, HEART, HEART_TYPE
 from dino_runner.components.dinosaur import Dinosaur
 from dino_runner.components.obstacles.obstacle_manager import ObstacleManager
 from dino_runner.utils.text_utils import draw_message_component
@@ -18,9 +18,9 @@ class Game:
         self.playing = False
         self.running = False
         self.score = 0
-        self.score_final = 0 ##
-        self.x = 0
+        self.score_final = 0 
         self.death_count = 0
+        self.record = 0
         self.game_speed = 20
         self.x_pos_bg = 0
         self.y_pos_bg = 380
@@ -42,8 +42,8 @@ class Game:
         self.playing = True
         self.obstacle_manager.reset_obstacles()
         self.power_up_manager.reset_power_ups()
-        self.game_speed = 20 ##
-        self.score = 0 ##
+        self.game_speed = 20 
+        self.score = 0 
         while self.playing:
             self.events()
             self.update()
@@ -62,12 +62,18 @@ class Game:
         self.update_score()
         self.power_up_manager.update(self.score, self.game_speed, self.player)
 
+
     def update_score(self):
         self.score += 1
-        if self.score % 100 == 0:
+        if self.score % 200 == 0:
             self.game_speed += 2
-        self.score_final = self.score ##
-    
+        self.score_final = self.score 
+        self.Record()
+
+    def Record(self):##
+        if self.score > self.record:
+            self.record = self.score
+        
     def draw(self, screen):
         self.clock.tick(FPS)  
         self.screen.fill((255, 255, 255))
@@ -100,24 +106,46 @@ class Game:
     def draw_power_up_time(self):
         if self.player.has_power_up:
             time_to_show = round((self.player.power_up_time - pygame.time.get_ticks()) / 1000, 2)
-            if time_to_show >= 0:
+            if time_to_show >= 0 and self.player.has_power_up_heart == False: ##
                 draw_message_component(
                     f"{self.player.type.capitalize()} enabled for {time_to_show} seconds",
                     self.screen,
                     pos_x_center = 500,
                     pos_y_center = 40
                 )
+            elif time_to_show >= 0 and self.player.has_power_up_heart == True: ##
+                draw_message_component(
+                    f"Life for {time_to_show} seconds", ##
+                    self.screen,
+                    pos_x_center = 500,
+                    pos_y_center = 40
+                )
             else:
                 self.player.has_power_up = False
+                self.player.has_power_up_hammer = False
+                self.player.has_power_up_heart = False 
                 self.player.type = DEFAULT_TYPE
 
+
+    
     def draw_final_score_and_death(self): ###
-        self.score_final = self.score
         draw_message_component(
-            f"Final score: {self.score_final} /death: {self.death_count}",
+            f"Final score: {self.score_final}",
             self.screen,
-            pos_x_center = 950,
+            pos_x_center = 980,
             pos_y_center = 50
+        )
+        draw_message_component(
+            f"Death count: {self.death_count}",
+            self.screen,
+            pos_x_center = 550,
+            pos_y_center = 100
+         )
+        draw_message_component(
+            f"Record: {self.record}",
+            self.screen,
+            pos_x_center = 980,
+            pos_y_center = 80
         )
 
     def handle_events_menu(self):
@@ -139,8 +167,14 @@ class Game:
             self.screen.blit(ICON, (half_screen_width - 50, half_screen_height - 140)) ###
             draw_message_component("Press any key to restart", self.screen)
             self.draw_final_score_and_death() ###
-                               
+            self.screen.blit(GAME_OVER, (half_screen_width - 180, half_screen_height + 50))
+                                       
         pygame.display.update()
         self.handle_events_menu()
-         
 
+   ## def draw_heart(self):
+     ##   half_screen_height = SCREEN_HEIGHT // 2
+       ## half_screen_width = SCREEN_WIDTH // 2 
+       ## if self.player.has_power_up_heart == True:
+         ##   self.screen.blit(HEART, (half_screen_width - 50, half_screen_height - 140))
+                  

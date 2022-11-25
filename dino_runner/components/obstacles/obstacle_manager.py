@@ -8,7 +8,6 @@ from dino_runner.utils.constants import BIRD
 from dino_runner.components.obstacles.cactus import Cactus
 from dino_runner.components.obstacles.cactus import Large_Cactus ##import
 from dino_runner.components.obstacles.bird import bird
-from dino_runner.components.power_ups.power_up_manager import PowerUpManager
 
 
 class ObstacleManager:
@@ -32,13 +31,14 @@ class ObstacleManager:
                     pygame.time.delay(500)
                     game.playing = False
                     game.death_count += 1
-                    break
-                else:                    
+                    break  
+                if game.player.has_power_up_hammer:
+                    self.obstacles.remove(obstacle)
+                if game.player.has_power_up_heart:
                     self.obstacles.remove(obstacle)
 
     def reset_obstacles(self):
         self.obstacles = []
-
 
     def draw(self, screen):
         for obstacle in self.obstacles:

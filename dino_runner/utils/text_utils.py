@@ -10,10 +10,10 @@ FONT_STYLE = "freesansbold.ttf"
 def draw_message_component(
     message,
     screen,
-    font_color=FONT_COLOR,
-    font_size=FONT_SIZE,
-    pos_y_center=SCREEN_HEIGHT // 2,
-    pos_x_center=SCREEN_WIDTH // 2
+    font_color = FONT_COLOR,
+    font_size = FONT_SIZE,
+    pos_y_center = SCREEN_HEIGHT // 2,
+    pos_x_center = SCREEN_WIDTH // 2
 ):
     font = pygame.font.Font(FONT_STYLE, font_size)
     text = font.render(message, True, font_color)
